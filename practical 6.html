@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>National level Hackathon Registration Form</title>
+<style>
+body{
+font-family: Arial;
+background: linear-gradient(to right,#4facfe,#00f2fe);
+margin:0;
+padding:0;
+}
+/* Form container */
+.container{
+width:50%;
+margin:auto;
+background:white;
+padding:30px;
+margin-top:40px;
+border-radius:10px;
+box-shadow:0px 0px 15px gray;
+animation: fadeIn 1.5s;
+}
+/* Heading */
+h2{
+text-align:center;
+color:#333;
+}
+/* Fieldset styling */
+fieldset{
+border:2px solid #4facfe;
+margin-bottom:20px;
+padding:15px;
+border-radius:8px;
+}
+/* Legend title */
+legend{
+font-weight:bold;
+color:#0077cc;
+}
+/* Input styling */
+input,select{
+width:100%;
+padding:8px;
+margin-top:5px;
+margin-bottom:10px;
+border-radius:5px;
+border:1px solid gray;
+}
+/* Checkbox and radio alignment */
+input[type="radio"],input[type="checkbox"]{
+width:auto;
+}
+/* Buttons */
+button{
+background:#4facfe;
+color:white;
+padding:10px 20px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:16px;
+transition:0.3s;
+}
+button:hover{
+background:#0077cc;
+transform:scale(1.05);
+}
+/* QR image animation */
+.qr{
+display:block;
+margin:auto;
+transition:0.3s;
+}
+.qr:hover{
+transform:scale(1.1);
+}
+/* Fade animation */
+@keyframes fadeIn{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>Hackathon Registration Form</h2>
+<form>
+<fieldset>
+<legend>Personal Information</legend>
+<label>Full Name</label>
+<input type="text" name="name" required>
+<label>Email</label>
+<input type="email" name="email" required>
+<label>Phone Number</label>
+<input type="tel" name="phone">
+<label>Gender</label><br>
+<input type="radio" name="gender"> Male
+<input type="radio" name="gender"> Female
+<input type="radio" name="gender"> Other
+</fieldset>
+<fieldset>
+<legend>Hackathon Details</legend>
+<label>Select Your Role</label>
+<select>
+  <option>Student</option>
+<option>Developer</option>
+<option>Designer</option>
+<option>Project Manager</option>
+<option>Data Analyst</option>
+</select>
+<label>Skills</label><br>
+<input type="checkbox"> HTML
+<input type="checkbox"> CSS
+<input type="checkbox"> JavaScript
+<input type="checkbox"> Python
+<br><br>
+<label>Team Size</label>
+<select>
+<option>1</option>
+<option>2</option>
+<option>3</option>
+<option>4</option>
+</select>
+</fieldset>
+<fieldset>
+<legend>Registration Fee Payment</legend>
+<p>Registration Fee: <b>₹200</b></p>
+<p>Scan Paytm QR Code to Pay</p>
+<img src="paytm_qr.png" width="200" class="qr">
+<br><br>
+<label>Upload Payment Receipt Screenshot</label>
+<input type="file">
+</fieldset>
+<center>
+<button type="submit">Register</button>
+<button type="reset">Reset</button>
+</center>
+</form>
+</div>
+
+</body>
+</html>
