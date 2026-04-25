@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HTML5 APIs Final Project</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    color: white;
+    text-align: center;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* Drag */
+.items {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.dragItem {
+    background: #00c9a7;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: grab;
+}
+
+.dropzone {
+    margin-top: 15px;
+    padding: 20px;
+    border: 2px dashed white;
+    min-height: 120px;
+}
+
+.highlight {
+    background: rgba(255,255,255,0.2);
+}
+
+/* Map */
+#map {
+    height: 250px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
+
+button {
+    padding: 8px 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #00c9a7;
+    color: white;
+    cursor: pointer;
+}
+
+input {
+    padding: 8px;
+    width: 80%;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🚀 HTML5 APIs Final Demo</h1>
+
+<div class="container">
+
+<!-- Drag Drop -->
+<div class="card">
+<h2>🖱 Drag & Drop</h2>
+
+<div class="items">
+<div class="dragItem" draggable="true" id="i1">Item 1</div>
+<div class="dragItem" draggable="true" id="i2">Item 2</div>
+<div class="dragItem" draggable="true" id="i3">Item 3</div>
+</div>
+
+<div class="dropzone" id="dropZone">Drop Here</div>
+</div>
+
+<!-- Geolocation + Map -->
+<div class="card">
+<h2>📍 Location + Map</h2>
+
+<button onclick="getLocation()">Get Current Location</button>
+<p id="loc"></p>
+
+<hr>
+
+<h3>Manual Location</h3>
+<input type="text" id="manualLocation" placeholder="City or Lat,Lng">
+<br>
+<button onclick="setManualLocation()">Set Location</button>
+
+<div id="map"></div>
+</div>
+
+<!-- Storage -->
+<div class="card">
+<h2>💾 Web Storage</h2>
+<input id="name" placeholder="Enter name">
+<br>
+<button onclick="save()">Save</button>
+<button onclick="load()">Load</button>
+<button onclick="clearData()">Clear</button>
+<p id="out"></p>
+</div>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+// DRAG & DROP
+let items = document.querySelectorAll(".dragItem");
+let dropZone = document.getElementById("dropZone");
+
+items.forEach(item=>{
+    item.addEventListener("dragstart",e=>{
+        e.dataTransfer.setData("text",e.target.id);
+    });
+});
+
+dropZone.addEventListener("dragover",e=>{
+    e.preventDefault();
+    dropZone.classList.add("highlight");
+});
+
+dropZone.addEventListener("dragleave",()=>{
+    dropZone.classList.remove("highlight");
+});
+
+dropZone.addEventListener("drop",e=>{
+    e.preventDefault();
+    let id = e.dataTransfer.getData("text");
+    dropZone.appendChild(document.getElementById(id));
+    dropZone.classList.remove("highlight");
+});
+
+// MAP INIT (India center)
+let map = L.map('map').setView([22.5937, 78.9629], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
+
+let marker;
+
+// COMMON FUNCTION
+function updateMap(lat, lon, text){
+    map.setView([lat, lon], 12);
+
+    if(marker){
+        map.removeLayer(marker);
+    }
+
+    marker = L.marker([lat, lon]).addTo(map)
+              .bindPopup(text)
+              .openPopup();
+}
+
+// AUTO LOCATION
+function getLocation(){
+    let output = document.getElementById("loc");
+
+    if(navigator.geolocation){
+        output.innerHTML = "Fetching...";
+        navigator.geolocation.getCurrentPosition(pos=>{
+            let lat = pos.coords.latitude;
+            let lon = pos.coords.longitude;
+
+            output.innerHTML = "Lat: "+lat+"<br>Lon: "+lon;
+            updateMap(lat, lon, "You are here");
+
+        }, ()=>{
+            output.innerHTML = "Permission denied";
+        });
+    } else {
+        output.innerHTML = "Not supported";
+    }
+}
+
+// MANUAL LOCATION
+function setManualLocation(){
+    let input = document.getElementById("manualLocation").value;
+
+    if(input.includes(",")){
+        let parts = input.split(",");
+        let lat = parseFloat(parts[0]);
+        let lon = parseFloat(parts[1]);
+
+        updateMap(lat, lon, "Manual Location");
+    } 
+    else {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${input}`)
+        .then(res => res.json())
+        .then(data => {
+            if(data.length > 0){
+                let lat = data[0].lat;
+                let lon = data[0].lon;
+
+                updateMap(lat, lon, input);
+            } else {
+                alert("Location not found");
+            }
+        });
+    }
+}
+
+// STORAGE
+function save(){
+    let val = document.getElementById("name").value;
+    localStorage.setItem("name", val);
+    alert("Saved!");
+}
+
+function load(){
+    let val = localStorage.getItem("name");
+    document.getElementById("out").innerHTML =
+        val ? "Saved: "+val : "No data";
+}
+
+function clearData(){
+    localStorage.removeItem("name");
+    document.getElementById("out").innerHTML="Cleared";
+}
+</script>
+
+</body>
+</html>
